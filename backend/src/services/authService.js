@@ -38,17 +38,33 @@ class AuthService {
   async login(credentials) {
     const { email, password } = credentials;
 
+    console.log('🔐 Login attempt:');
+    console.log('  Email received:', email);
+    console.log('  Email length:', email?.length);
+    console.log('  Password received:', password);
+    console.log('  Password length:', password?.length);
+
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('❌ User not found for email:', email);
       throw new Error('Invalid email or password');
     }
 
+    console.log('✅ User found:', user.email);
+    console.log('  Stored hash:', user.password);
+
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    console.log('🔍 Password comparison result:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('❌ Password does not match');
       throw new Error('Invalid email or password');
     }
+
+    console.log('✅ Login successful');
 
     // Generate token
     const token = this.generateToken(user._id);
